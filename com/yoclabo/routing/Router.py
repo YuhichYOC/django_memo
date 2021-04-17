@@ -5,14 +5,14 @@ class Router:
 
     def __init__(self):
         self.f_request = None
-        self.f_parameters: list = []
+        self.f_parameters: dict = {}
 
     @property
     def request(self):
         return self.f_request
 
     @property
-    def parameters(self) -> list:
+    def parameters(self) -> dict:
         return self.f_parameters
 
     @request.setter
@@ -20,14 +20,14 @@ class Router:
         self.f_request = arg
 
     @parameters.setter
-    def parameters(self, arg: list):
+    def parameters(self, arg: dict):
         self.f_parameters = arg
 
     def has_post(self) -> bool:
         return True if 0 < len(self.request.POST) else False
 
     def has(self, name: str) -> bool:
-        if self.request.POST[name] is None:
+        if name not in self.request.POST:
             return False
         if 0 == len(self.request.POST[name]):
             return False
@@ -49,6 +49,8 @@ class MemoRouter(Router):
             if self.has('title'):
                 if self.has('text'):
                     return self.run_handler(Handler.InsertHandler())
-                pass
-            pass
+            if self.has('id'):
+                return self.run_handler(Handler.DeleteHandler())
+        if 0 < len(self.parameters):
+            return self.run_handler(Handler.NodeHandler())
         return self.run_handler(Handler.TitleListHandler())

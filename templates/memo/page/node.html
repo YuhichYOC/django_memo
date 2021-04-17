@@ -1,0 +1,12 @@
+{% extends 'memo/layout/node.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block node %}
+    <a href="/memo/">List</a>
+    <span class="line">{{ title }}</span>
+    <hr>
+    <span class="line">{{ text|linebreaksbr }}</span>
+    <hr>
+    <span class="line">{{ date }}</span>
+{% endblock %}

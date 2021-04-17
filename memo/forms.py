@@ -6,10 +6,14 @@ class Node(forms.Form):
         label='タイトル',
         max_length=100,
         required=True,
-        widget=forms.TextInput,
+        widget=forms.TextInput(attrs={
+            'class': 'w100',
+        }),
     )
     text = forms.CharField(
         label='本文',
         max_length=1000,
-        widget=forms.Textarea,
+        widget=forms.Textarea(attrs={
+            'class': 'w100',
+        }),
     )

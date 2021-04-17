@@ -8,14 +8,14 @@ class Handler:
 
     def __init__(self):
         self.f_request = None
-        self.f_parameters: list = []
+        self.f_parameters: dict = {}
 
     @property
     def request(self):
         return self.f_request
 
     @property
-    def parameters(self) -> list:
+    def parameters(self) -> dict:
         return self.f_parameters
 
     @request.setter
@@ -23,11 +23,8 @@ class Handler:
         self.f_request = arg
 
     @parameters.setter
-    def parameters(self, arg: list):
+    def parameters(self, arg: dict):
         self.f_parameters = arg
-
-    def value(self, name: str) -> str:
-        return self.request.GET[name]
 
     def run(self):
         pass
@@ -40,12 +37,12 @@ class TitleListHandler(Handler):
 
     def run(self):
         nodes = models.Node.objects.all()
-        nodes = list(map(lambda node: dict(title=node.title, date=node.date), nodes))
+        nodes = list(map(lambda node: dict(id=node.id, title=node.title, date=node.date), nodes))
         params = {
             'nodes': nodes,
             'form': forms.Node(None),
         }
-        return render(self.request, 'memo/list.html', params)
+        return render(self.request, 'memo/page/list.html', params)
 
 
 class NodeHandler(Handler):
@@ -54,14 +51,14 @@ class NodeHandler(Handler):
         super().__init__()
 
     def run(self):
-        node = models.Node.objects.filter(title=self.value('')).first()
+        node = models.Node.objects.filter(id=self.parameters['node_id']).first()
         params = {
             'title': node.title,
             'text': node.text,
             'date': node.date,
             'form': forms.Node(None),
         }
-        return render(self.request, 'memo/node.html', params)
+        return render(self.request, 'memo/page/node.html', params)
 
 
 class InsertHandler(Handler):
@@ -86,7 +83,7 @@ class DeleteHandler(Handler):
         super().__init__()
 
     def run(self):
-        models.Node.objects.filter(title=self.request.POST['title']).delete()
+        models.Node.objects.filter(id=self.request.POST['id']).delete()
         t = TitleListHandler()
         t.request = self.request
         return t.run()
